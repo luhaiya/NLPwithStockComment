@@ -7,8 +7,9 @@ Created on 2017��5��17��
 @description:
 '''
 from selenium import webdriver
-from lxml import html
-import requests
+import time
+# from lxml import html
+# import requests
 class Crawler:
     url = ''
     newurl = set()
@@ -23,6 +24,7 @@ class Crawler:
         self.driver = webdriver.PhantomJS(desired_capabilities=cap)
     def crawAllHtml(self,url):
         self.driver.get(url)
+        time.sleep(2)
 #         htmlData = requests.get(url).content.decode('utf-8')
 #         domTree = html.fromstring(htmlData)
 #         return domTree
@@ -33,21 +35,24 @@ class Crawler:
         self.crawAllHtml(self.url)
         postlist = self.driver.find_elements_by_xpath('//*[@id="articlelistnew"]/div')
         for post in postlist:
-            if len(post.xpath('./span[3]/a/@href')):
-                self.getNewUrl('http://guba.eastmoney.com'+post.xpath('./span[3]/a/@href')[0])
+            href = post.find_elements_by_tag_name('span')[2].find_elements_by_tag_name('a')
+            if len(href):
+                self.getNewUrl(href[0].get_attribute('href'))
+#             if len(post.find_elements_by_xpath('./span[3]/a/@href')):
+#                 self.getNewUrl('http://guba.eastmoney.com'+post.find_elements_by_xpath('./span[3]/a/@href')[0])
         for url in self.newurl:
             self.crawAllHtml(url)
-            time = self.driver.find_elements_by_xpath('//*[@id="zwconttb"]/div[2]/text()')
-            post = self.driver.find_elements_by_xpath('//*[@id="zwconbody"]/div/text()')
-            age = self.driver.find_elements_by_xpath('//*[@id="zwconttbn"]/span/span[2]/text()')
+            time = self.driver.find_elements_by_xpath('//*[@id="zwconttb"]/div[2]')
+            post = self.driver.find_elements_by_xpath('//*[@id="zwconbody"]/div')
+            age = self.driver.find_elements_by_xpath('//*[@id="zwconttbn"]/span/span[2]')
             if len(post) and len(time) and len(age):
-                comments.append({'time':time[0],'content':post[0], 'age':age[0]})
+                comments.append({'time':time[0].text,'content':post[0].text, 'age':age[0].text})
             commentlist = self.driver.find_elements_by_xpath('//*[@id="zwlist"]/div')  
             if len(commentlist):
                 for comment in commentlist:
-                    time = comment.xpath('./div[3]/div[1]/div[2]/text()')
-                    post = comment.xpath('./div[3]/div[1]/div[3]/text()')
-                    age = comment.xpath('./div[3]/div[1]/div[1]/span[2]/span[2]/text()')
+                    time = comment.find_elements_by_xpath('./div[3]/div[1]/div[2]')
+                    post = comment.find_elements_by_xpath('./div[3]/div[1]/div[3]')
+                    age = comment.find_elements_by_xpath('./div[3]/div[1]/div[1]/span[2]/span[2]')
                     if len(post) and len(time) and len(age):
-                        comments.append({'time':time[0],'content':post[0], 'age':age[0]})
+                        comments.append({'time':time[0].text,'content':post[0].text, 'age':age[0].text})
         return comments
