@@ -23,10 +23,10 @@ def main():
     crawler = Crawler(stocknum, page)
     datalist = crawler.getData()
     strdata = ''
-    for data in datalist:
-        strdata += data['content']
-    txt = File(stocknum,'txt','./data/')
-    txt.inputData(strdata)
+#     for data in datalist:
+#         strdata += data['content']
+    txt = File(stocknum,'json','./data/')
+    txt.inputData(datalist)
             
 if __name__ == "__main__":
     main()
