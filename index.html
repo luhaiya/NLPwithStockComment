@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>分析图表</title>
+<style>
+#mainContainer{width:100%;}
+#fileContainer{width:100%; text-align:center;float:left;}
+#picContainer{width:100%; text-align:center;float:right;}
+</style>
+</head>
+<body>
+<div id = 'mainContainer'>
+<div id = 'fileContainer'>这里是文件夹列表</div>
+<div id = 'picContainer'>这里是图表</div>
+</div>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script> 
+<script>
+function getStockNum(){
+	var src = "./data/600000_page_1.json";
+	$.getJSON(src, function (data){
+		console.log(data);
+	})
+}
+window.onload = function(){
+	//document.getElementById('fileContainer').innerHTML = getStockNum();
+	getStockNum();
+}
+</script>
+</body>
+</html>
