@@ -19,14 +19,12 @@ if sys.getdefaultencoding() != default_encoding:
            
 def main():
     stocknum = str(600000)
-    page = str(1)
-    crawler = Crawler(stocknum, page)
-    datalist = crawler.getData()
-    strdata = ''
-#     for data in datalist:
-#         strdata += data['content']
-    txt = File(stocknum,'json','./data/')
-    txt.inputData(datalist)
+    for i in range(1,11):
+        page = str(i)
+        crawler = Crawler(stocknum, page)
+        datalist = crawler.getData()
+        comments = File(stocknum+'_page_'+page,'json','./data/')
+        comments.inputData(datalist)
             
 if __name__ == "__main__":
     main()
