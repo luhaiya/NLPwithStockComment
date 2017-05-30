@@ -11,6 +11,7 @@ import time
 import json
 import re  
 from HTMLParser import HTMLParser 
+from snownlp import SnowNLP
 # from lxml import html
 # import requests
 class Crawler:
@@ -70,7 +71,10 @@ class Crawler:
             post = self.driver.find_elements_by_xpath('//*[@id="zwconbody"]/div')
             age = self.driver.find_elements_by_xpath('//*[@id="zwconttbn"]/span/span[2]')
             if len(post) and len(time) and len(age):
-                comments.append({'time':time[0].text,'content':self.filterHtmlTag(post[0].text), 'age':age[0].text})
+                text = self.filterHtmlTag(post[0].text)
+                if len(text):
+                    s = SnowNLP(text)
+                    comments.append({'time':time[0].text,'content':s.sentiments, 'age':age[0].text})
             commentlist = self.driver.find_elements_by_xpath('//*[@id="zwlist"]/div')  
             if len(commentlist):
                 for comment in commentlist:
@@ -78,5 +82,8 @@ class Crawler:
                     post = comment.find_elements_by_xpath('./div[3]/div[1]/div[3]')
                     age = comment.find_elements_by_xpath('./div[3]/div[1]/div[1]/span[2]/span[2]')
                     if len(post) and len(time) and len(age):
-                        comments.append({'time':time[0].text,'content':self.filterHtmlTag(post[0].text), 'age':age[0].text})
+                        text = self.filterHtmlTag(post[0].text)
+                        if len(text):
+                            s = SnowNLP(text)
+                            comments.append({'time':time[0].text,'content':s.sentiments, 'age':age[0].text})
         return json.dumps(comments)
