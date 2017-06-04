@@ -10,8 +10,8 @@ from selenium import webdriver
 import time
 import json
 import re  
-from HTMLParser import HTMLParser 
-from snownlp import SnowNLP
+# from HTMLParser import HTMLParser 
+from myNLP import *
 # from lxml import html
 # import requests
 class Crawler:
@@ -73,8 +73,8 @@ class Crawler:
             if len(post) and len(time) and len(age):
                 text = self.filterHtmlTag(post[0].text)
                 if len(text):
-                    s = SnowNLP(text)
-                    comments.append({'time':time[0].text,'content':s.sentiments, 'age':age[0].text})
+                    tmp = myNLP(text)
+                    comments.append({'time':time[0].text,'content':tmp.prob, 'age':age[0].text})
             commentlist = self.driver.find_elements_by_xpath('//*[@id="zwlist"]/div')  
             if len(commentlist):
                 for comment in commentlist:
@@ -84,6 +84,6 @@ class Crawler:
                     if len(post) and len(time) and len(age):
                         text = self.filterHtmlTag(post[0].text)
                         if len(text):
-                            s = SnowNLP(text)
-                            comments.append({'time':time[0].text,'content':s.sentiments, 'age':age[0].text})
+                            tmp = myNLP(text)
+                            comments.append({'time':time[0].text,'content':tmp.prob, 'age':age[0].text})
         return json.dumps(comments)
