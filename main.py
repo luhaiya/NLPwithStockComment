@@ -19,12 +19,24 @@ if sys.getdefaultencoding() != default_encoding:
            
 def main():
     stocknum = str(600000)
-    for i in range(1,11):
+    total = dict()
+    for i in range(1,10):
         page = str(i)
         crawler = Crawler(stocknum, page)
         datalist = crawler.getData()
         comments = File(stocknum+'_page_'+page,'json','./data/')
         comments.inputData(datalist)
-            
+        data = open('./data/'+stocknum+'_page_'+page+'.json','r').read()
+        jsonData = json.loads(data)
+        for detail in jsonData:
+            num = '1' if '年' not in detail['age'].encode('utf-8') else detail['age'].encode('utf-8').replace('年','')
+            num = float(num)
+            date = detail['time'][4:14].encode('utf-8')
+            total[date] = total[date] if date in total.keys() else {'num':0, 'content':0}
+            total[date]['num'] = total[date]['num'] + num if total[date]['num'] else num
+            total[date]['content'] = total[date]['content'] + detail['content']*num if total[date]['content'] else detail['content']*num
+    total = json.dumps(total)
+    totalfile = File(stocknum,'json','./data/')
+    totalfile.inputData(total)
 if __name__ == "__main__":
     main()
