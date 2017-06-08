@@ -1,31 +1,124 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>分析图表</title>
-<style>
-#mainContainer{width:100%;}
-#fileContainer{width:100%; text-align:center;float:left;}
-#picContainer{width:100%; text-align:center;float:right;}
-</style>
-</head>
-<body>
-<div id = 'mainContainer'>
-<div id = 'fileContainer'>这里是文件夹列表</div>
-<div id = 'picContainer'>这里是图表</div>
-</div>
-<script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script> 
-<script>
-function getStockNum(){
-	var src = "./data/600000_page_1.json";
-	$.getJSON(src, function (data){
-		console.log(data);
-	})
-}
-window.onload = function(){
-	//document.getElementById('fileContainer').innerHTML = getStockNum();
-	getStockNum();
-}
-</script>
-</body>
-</html>
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta charset="UTF-8">  
+<title>分析图表</title>  
+<style>  
+body{texr-align:center;}  
+#mainContainer{width:100%;}  
+#fileContainer{width:100%; text-align:center;}  
+#picContainer{width: 800px;height:600px;margin:0 auto;}  
+</style>  
+</head>  
+<body>  
+<div id = 'mainContainer'>  
+<div id = 'fileContainer'>这里是文件夹列表</div>  
+<div id = 'picContainer'></div>  
+</div>  
+<script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>   
+<script src = "./echarts.js"></script>  
+<script>  
+main();  
+function main(){  
+    var stocknum = 600000;  
+    getDate(stocknum);  
+}  
+function getDate(stocknum){  
+    var src = "./data/"+stocknum+".json";  
+    $.getJSON(src, function (res){  
+        var date = [];  
+        for(var key in res){  
+            key = key.replace('-','/').replace('-','/');  
+            date.push(key);  
+        }  
+        date.sort();  
+        data = [];  
+        for (var i = 0; i < date.length; i++) {  
+            dat = date[i].replace('/','-').replace('/','-');  
+            data.push(res[dat]['content']/res[dat]['num']);  
+        }  
+        drawPic(date,data);  
+    })  
+}  
+function drawPic(date, data){  
+    //initialize and setting options  
+    var myChart = echarts.init(document.getElementById('picContainer'));  
+    option = {  
+        tooltip: {  
+            trigger: 'axis',  
+            position: function (pt) {  
+                return [pt[0], '10%'];  
+            }  
+        },  
+        title: {  
+            left: 'center',  
+            text: '股票情绪走向图',  
+        },  
+        toolbox: {  
+            feature: {  
+                dataZoom: {  
+                    yAxisIndex: 'none'  
+                },  
+                restore: {},  
+                saveAsImage: {}  
+            }  
+        },  
+        xAxis: {  
+            type: 'category',  
+            boundaryGap: false,  
+            data: date  
+        },  
+        yAxis: {  
+            type: 'value',  
+            boundaryGap: [0, '100%']  
+        },  
+        dataZoom: [{  
+            type: 'inside',  
+            start: 0,  
+            end: 10  
+        }, {  
+            start: 0,  
+            end: 10,  
+            handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',  
+            handleSize: '80%',  
+            handleStyle: {  
+                color: '#fff',  
+                shadowBlur: 3,  
+                shadowColor: 'rgba(0, 0, 0, 0.6)',  
+                shadowOffsetX: 2,  
+                shadowOffsetY: 2  
+            }  
+        }],  
+        series: [  
+            {  
+                name:'stocknum',  
+                type:'line',  
+                smooth:true,  
+                symbol: 'none',  
+                sampling: 'average',  
+                itemStyle: {  
+                    normal: {  
+                        color: 'rgb(255, 70, 131)'  
+                    }  
+                },  
+                areaStyle: {  
+                    normal: {  
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{  
+                            offset: 0,  
+                            color: 'rgb(255, 158, 68)'  
+                        }, {  
+                            offset: 1,  
+                            color: 'rgb(255, 70, 131)'  
+                        }])  
+                    }  
+                },  
+                data: data  
+            }  
+        ]  
+    };  
+    //draw pic  
+    myChart.setOption(option);    
+}  
+</script>  
+</body>  
+</html>  
